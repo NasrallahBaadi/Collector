@@ -37,9 +37,20 @@ Make sure you have `fzf`, `rdate`, and your desired collectors installed and ava
 
 ---
 
-## Usage
+## Installation & Usage
 
-Run the script by supplying your target IP, domain, credentials, and Domain Controller FQDN:
+1. Save the script to `/usr/local/bin/collect`:
+
+2. Run the script by supplying your target IP, domain, credentials, and Domain Controller FQDN:
 
 ```bash
-./bloodhound-collect -i <TARGET_IP> -d <DOMAIN> -u <USERNAME> -p <PASSWORD> -dc <DC_FQDN>
+collect -i <TARGET_IP> -u <USERNAME> -p <PASSWORD> -d <DOMAIN> -dc <DC_FQDN>
+```
+
+## Example
+
+```bash
+collect -i 10.10.10.100 -u john.doe -p "P@ssw0rd123!" -d corp.local -dc dc01.corp.local
+```
+
+
