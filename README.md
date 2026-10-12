@@ -53,4 +53,5 @@ collect -i <TARGET_IP> -u <USERNAME> -p <PASSWORD> -d <DOMAIN> -dc <DC_FQDN>
 collect -i 10.10.10.100 -u john.doe -p "P@ssw0rd123!" -d corp.local -dc dc01.corp.local
 ```
 
+![Exmaple](example.png)
 
