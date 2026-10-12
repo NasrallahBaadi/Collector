@@ -1,0 +1,2 @@
+# Collector
+Multiple Bloodhound collectors
