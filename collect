@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Default values
+IP=""
+DOMAIN=""
+USER=""
+PASS=""
+DC=""
+
+# Parse arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -i) IP="$2"; shift ;;
+        -d) DOMAIN="$2"; shift ;;
+        -u) USER="$2"; shift ;;
+        -p) PASS="$2"; shift ;;
+        -dc) DC="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+# Validation
+if [[ -z "$IP" || -z "$DOMAIN" || -z "$USER" || -z "$PASS" || -z "$DC" ]]; then
+    echo "Usage: bloodhound-collect -i <IP> -d <DOMAIN> -u <USER> -p <PASS> -dc <DC_FQDN>"
+    exit 1
+fi
+
+# --- NEW: Time Sync ---
+echo "[*] Syncing time with $DOMAIN..."
+rdate -n "$DOMAIN" || echo "[!] Warning: rdate failed. Check connectivity to $DOMAIN."
+echo ""
+
+# Define the menu options
+declare -A commands
+commands["1. BloodHound-CE-Python (Standard)"]="bloodhound-ce-python -d '$DOMAIN' -dc '$DC' -ns '$IP' -u '$USER' -p '$PASS' -c all --zip"
+commands["2. NetExec (nxc)"]="nxc ldap '$IP' -u '$USER' -p '$PASS' --bloodhound -c all --dns-server '$IP'"
+commands["3. BloodyAD (Direct to BH)"]="bloodyAD -d '$DOMAIN' -u '$USER' -p '$PASS' --host '$DC' get bloodhound"
+commands["4. RustHound (Fast)"]="rusthound-ce -d '$DOMAIN' -u '$USER@$DOMAIN' -p '$PASS' -z"
+
+# Launch interactive menu
+choice=$(printf "%s\n" "${!commands[@]}" | sort | fzf --header="Select Collector (Arrows to move, Enter to run)" --reverse --height=20%)
+
+# Execution logic
+if [[ -n "$choice" ]]; then
+    cmd="${commands[$choice]}"
+    echo -e "\n[+] Running: $cmd\n"
+    eval "$cmd"
+else
+    echo "Aborted."
+fi
